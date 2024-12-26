@@ -3,12 +3,13 @@ using System.Drawing;
 using System.Threading;
 using WindowsInput;
 using WindowsInput.Native;
+using CSharpDiscordWebhook.NET.Discord;
 
 namespace ScreenColorChecker
 {
 	class Program
 	{
-		static void Main(string[] args)
+		static async Task Main(string[] args)
 		{
 			InputSimulator sim = new InputSimulator();
 			// Set the area of the screen to check
@@ -23,7 +24,8 @@ namespace ScreenColorChecker
 				if (found)
 				{
 					Console.WriteLine("Video Done!");
-					sim.Keyboard.ModifiedKeyStroke(VirtualKeyCode.CONTROL, VirtualKeyCode.SHIFT);
+					await SendMessage();
+					sim.Keyboard.ModifiedKeyStroke(VirtualKeyCode.CONTROL, VirtualKeyCode.SHIFT); //Shortcut in OBS to stop the recording
 					while (true)
 					{
 						Console.Beep(1000, 1000);
@@ -103,6 +105,20 @@ namespace ScreenColorChecker
 			return ((Math.Abs(pixelColor.R - targetColor.R) <= tolerance) || (Math.Abs(pixelColor.R - targetColor2.R) <= tolerance)) &&
 				   ((Math.Abs(pixelColor.G - targetColor.G) <= tolerance) || (Math.Abs(pixelColor.G - targetColor2.G) <= tolerance)) &&
 				   ((Math.Abs(pixelColor.B - targetColor.B) <= tolerance) || (Math.Abs(pixelColor.B - targetColor2.B) <= tolerance));
+		}
+
+		static async Task SendMessage()
+		{
+			DiscordWebhook hook = new DiscordWebhook();
+			hook.Uri = new Uri("<Discord Webhook URL>");
+
+			DiscordMessage message = new DiscordMessage();
+			message.Content = "VHS Done, ping! @everyone";
+			message.Username = "VHSStop";
+
+
+			//message
+			await hook.SendAsync(message);
 		}
 	}
 }
